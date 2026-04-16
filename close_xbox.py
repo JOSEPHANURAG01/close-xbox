@@ -3,7 +3,7 @@ import time
 import sys
 
 LAUNCHER_NAME = "ArmouryCrateSE.exe"
-XBOX_NAME = "XboxPcApp.exe"
+XBOX_PROCESSES = ["XboxPcApp.exe", "XboxPcAppFT.exe", "Xbox.exe"]
 MAX_WAIT_TIME = 180       # How long to watch for both processes (seconds)
 KILL_DELAY = 30           # How long to wait after detection before killing (seconds)
 
@@ -31,11 +31,13 @@ def kill_process(name: str) -> None:
 
 
 def main():
-    print(f"Watching for {LAUNCHER_NAME} and {XBOX_NAME}...")
+    print(f"Watching for {LAUNCHER_NAME} and Xbox apps...")
 
     for elapsed in range(MAX_WAIT_TIME):
         launcher_running = check_if_process_exists(LAUNCHER_NAME)
-        xbox_running = check_if_process_exists(XBOX_NAME)
+        
+        # Check if ANY of the Xbox processes are running
+        xbox_running = any(check_if_process_exists(p) for p in XBOX_PROCESSES)
 
         if launcher_running and xbox_running:
             print(f"Both processes detected at {elapsed}s.")
@@ -44,13 +46,18 @@ def main():
             # Wait, but keep checking if Xbox was manually closed during delay
             for i in range(KILL_DELAY):
                 time.sleep(1)
-                if not check_if_process_exists(XBOX_NAME):
+                # If ALL Xbox processes are gone, exit gracefully
+                if not any(check_if_process_exists(p) for p in XBOX_PROCESSES):
                     print("Xbox was already closed manually. Exiting.")
                     sys.exit(0)
                 print(f"  Closing in {KILL_DELAY - i - 1}s...")
 
             print("Closing Xbox now...")
-            kill_process(XBOX_NAME)
+            
+            # Loop through and kill all of them
+            for p in XBOX_PROCESSES:
+                kill_process(p)
+                
             print("Done.")
             sys.exit(0)
 
