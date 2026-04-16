@@ -4,8 +4,8 @@ import sys
 
 LAUNCHER_NAME = "ArmouryCrateSE.exe"
 XBOX_PROCESSES = ["XboxPcApp.exe", "XboxPcAppFT.exe", "Xbox.exe"]
-MAX_WAIT_TIME = 180       # How long to watch for both processes (seconds)
-KILL_DELAY = 30           # How long to wait after detection before killing (seconds)
+MAX_WAIT_TIME = 300       # How long to watch for both processes (seconds)
+KILL_DELAY = 1           # How long to wait after detection before killing (seconds)
 
 
 def check_if_process_exists(name: str) -> bool:
